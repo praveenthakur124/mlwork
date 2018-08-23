@@ -93,5 +93,6 @@ class TestPostApiCateg(object):
 
 
 obj = TestPostApiCateg("/home/praveen/Working_files/Category_Work/shuffle_US_channel_meta.csv")
+obj.req_api_result()
 
 
