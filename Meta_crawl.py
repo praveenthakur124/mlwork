@@ -12,11 +12,11 @@ class MetaData(object):
         self.api_key = api_key
 
     def crawling(self):
-        with codecs.open('/home/praveen/Working_files/test.csv', 'w', encoding='utf-8') as output_file:
+        with codecs.open('/home/praveen/Working_files/Category_Work/Australia_channel_meta.csv', 'w', encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
-            channel_id_file = pd.read_csv('/home/praveen/Working_files/example.csv', header=None)
+            channel_id_file = pd.read_csv(self.input_file, header=None)
 
-            for channel in channel_id_file.values:
+            for channel in channel_id_file.values[:12]:
                 channel_id = str(channel[0])
 
                 base_video_url = 'https://www.youtube.com/watch?v='
@@ -100,6 +100,6 @@ class MetaData(object):
                         break
 
 
-obj = MetaData('/home/praveen/Working_files/example.csv',
+obj = MetaData('/home/praveen/Working_files/Category_Work/Australia_channel_ids.csv',
                'AIzaSyC54MhoGU4G3XjIqeTFrmqhENNFPyCyXOk')
 obj.crawling()
