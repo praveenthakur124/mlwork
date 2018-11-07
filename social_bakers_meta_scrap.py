@@ -76,7 +76,7 @@ class SocialBakers(object):
                     try:
                         inp = requests.get(url)
                         resp = inp.text
-                        detect_regex = r'\/statistics\/facebook\/pages\/detail\/[0-9]+[\-A-Za-z]+'
+                        detect_regex = r'\/statistics\/facebook\/pages\/detail\/[0-9]+[\-A-Za-z0-9]+'
                         regex_compile = re.compile(detect_regex)
                         regex_search = regex_compile.findall(resp)
 
