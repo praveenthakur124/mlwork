@@ -2,9 +2,12 @@ import requests
 import csv
 import codecs
 import re
+from time import sleep
+from random import randint
 
 
 class SocialTwitter(object):
+
     def scraper(self):
         category_list = ['brands/accommodation', 'brands/airlines', 'brands/alcohol/beer',
                          'brands/alcohol/spirits', 'brands/alcohol/wine', 'brands/auto/cars',
@@ -54,7 +57,8 @@ class SocialTwitter(object):
                          'society/education/university', 'society/governmental', 'society/ngo',
                          'society/politics', 'society/professional-association', 'society/science',
                          'sport/sport-club', 'sport/sport-event', 'sport/sport-organization']
-        with codecs.open("/home/praveen/Working_files/test.csv", "a", encoding='utf-8') as output_file:
+
+        with codecs.open("/home/praveen/Working_files/Social_bakers_collection/twitter_data.csv", "a", encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
             twitter_regex = r'\/statistics\/twitter\/profiles\/detail\/[A-z0-9\-]+'
             data_list = []
@@ -62,21 +66,25 @@ class SocialTwitter(object):
             for cat in category_list:
                 category = str(cat)
                 page_url = "https://www.socialbakers.com/statistics/twitter/profiles/india/{}/page-96-100/".format(category)
-                inp = requests.get(page_url)
-                resp = inp.text
+                try:
+                    inp = requests.get(page_url)
+                    resp = inp.text
 
-                regex_compile = re.compile(twitter_regex)
-                regex_serach = regex_compile.findall(resp)
+                    regex_compile = re.compile(twitter_regex)
+                    regex_search = regex_compile.findall(resp)
 
-                for row in regex_serach:
-                    print('India')
-                    data_list.append('India')
-                    print(str(row))
-                    data_list.append(str(row))
-                    print(category)
-                    data_list.append(category)
-                    csv_writer.writerow(data_list)
-                    data_list = []
+                    for row in regex_search:
+                        print('India')
+                        data_list.append('India')
+                        print(str(row))
+                        data_list.append(str(row))
+                        print(category)
+                        data_list.append(category)
+                        csv_writer.writerow(data_list)
+                        data_list = []
+                    sleep(randint(2, 4))
+                except Exception as e:
+                    print(e)
 
 
 obj = SocialTwitter()
