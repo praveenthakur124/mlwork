@@ -48,26 +48,29 @@ class CategoryTest(object):
                                  'nan': ''
                                  }
         meta_file = pd.read_csv(self.input_file, header=None)
-        with codecs.open('/home/praveen/Working_files/Category_Work/cat_api_result.csv', 'w', encoding='utf-8') as ouput_file:
+        with codecs.open('/home/praveen/Working_files/Category_Work/Australia_channel_category_test.csv', 'w', encoding='utf-8') as ouput_file:
             csv_writer = csv.writer(ouput_file)
             for row in meta_file.values:
-                video_id = str(row[2])
+                channel_id = str(row[0])
+                print(channel_id)
+                data_list.append(channel_id)
+                video_id = str(row[1])
                 print(video_id)
                 data_list.append(video_id)
-                video_title = str(row[5])
+                video_title = str(row[4])
                 print(video_title)
                 # data_list.append(video_title)
-                video_desc = str(row[6])
+                video_desc = str(row[5])
                 print(video_desc)
                 # data_list.append(video_desc)
-                video_tags = str(row[7])
+                video_tags = str(row[6])
                 print(video_tags)
                 # data_list.append(video_tags)
 
-                if math.isnan(row[4]):
+                if math.isnan(row[3]):
                     data_list.append("Nan")
                 else:
-                    cat_int = int(row[4])
+                    cat_int = int(row[3])
                     video_cat_id = str(cat_int)
                     for k, v in youtube_category_dict.items():
                         if video_cat_id in k:
@@ -75,22 +78,75 @@ class CategoryTest(object):
                             data_list.append(v)
 
                 description = video_title.strip() + video_desc.strip() + video_tags.strip()
-                api_url = 'http://180.151.75.164:8080/ml/result/genre_classification?method=categ&description={}'.format(description)
+                api_url = 'http://180.151.75.164:8080/ml/result/genre_classification'
+                data = {'method': 'newcategory', 'description': description}
                 try:
-                    inp = requests.get(api_url)
+                    inp = requests.post(api_url, data=data)
                     print(inp.status_code)
                     resp = inp.json()
                     print(resp['status'])
-                    if 'result' in resp:
-                        print(resp['result'])
-                        data_list.append(resp['result'])
+                    if 'result1' in resp:
+                        print(resp['result1'])
+                        data_list.append(resp['result1'])
+                    else:
+                        data_list.append("")
+                    if 'result2' in resp:
+                        print(resp['result2'])
+                        data_list.append(resp['result2'])
+                    else:
+                        data_list.append("")
+                    if 'result3' in resp:
+                        print(resp['result3'])
+                        data_list.append(resp['result3'])
+                    else:
+                        data_list.append("")
+                    if 'desc_func1' in resp:
+                        print(resp['desc_func1'])
+                        data_list.append(resp['desc_func1'])
+                    else:
+                        data_list.append("")
+                    if 'desc_func2' in resp:
+                        print(resp['desc_func2'])
+                        data_list.append(resp['desc_func2'])
+                    else:
+                        data_list.append("")
+                    if 'desc_func3' in resp:
+                        print(resp['desc_func3'])
+                        data_list.append(resp['desc_func3'])
+                    else:
+                        data_list.append("")
+                    if 'miss_vocab' in resp:
+                        print(resp['miss_vocab'])
+                        data_list.append(resp['miss_vocab'])
+                    else:
+                        data_list.append("")
+                    if 'text' in resp:
+                        print(resp['text'])
+                        data_list.append(resp['text'])
+                    else:
+                        data_list.append("")
+                    if 'confidence' in resp:
+                        print(resp['confidence'])
+                        data_list.append(resp['confidence'])
+                    else:
+                        data_list.append("")
+                    if 'total_words' in resp:
+                        print(resp['total_words'])
+                        data_list.append(resp['total_words'])
+                    else:
+                        data_list.append("")
+                    if 'language_barrier' in resp:
+                        print(resp['language_barrier'])
+                        data_list.append(resp['language_barrier'])
+                    else:
+                        data_list.append("")
                 except Exception as e:
                     print(e)
                 csv_writer.writerow(data_list)
                 data_list = []
 
 
-obj = CategoryTest('/home/praveen/Working_files/Category_Work/shuffle_cat_channel_meta.csv')
+obj = CategoryTest('/home/praveen/Working_files/Category_Work/Australia_channel_meta.csv')
 obj.api_test_category()
 
 

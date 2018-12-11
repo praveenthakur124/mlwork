@@ -3,6 +3,7 @@ import csv
 import os
 import codecs
 
+
 class AgeGenderTest(object):
     def __init__(self, input_folder):
         self.input_folder = input_folder

@@ -12,7 +12,7 @@ class MetaData(object):
         self.api_key = api_key
 
     def crawling(self):
-        with codecs.open('/home/praveen/Working_files/Category_Work/Australia_channel_meta.csv', 'w', encoding='utf-8') as output_file:
+        with codecs.open('/home/praveen/Working_files/test.csv', 'a', encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
             channel_id_file = pd.read_csv(self.input_file, header=None)
 
@@ -100,6 +100,6 @@ class MetaData(object):
                         break
 
 
-obj = MetaData('/home/praveen/Working_files/Category_Work/Australia_channel_ids.csv',
+obj = MetaData('/home/praveen/Working_files/example.csv',
                'AIzaSyC54MhoGU4G3XjIqeTFrmqhENNFPyCyXOk')
 obj.crawling()

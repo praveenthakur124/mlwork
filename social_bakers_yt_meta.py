@@ -1,16 +1,14 @@
-import csv
 import requests
-import re
+import csv
 import codecs
+import re
 from time import sleep
 from random import randint
 
 
-class SocialBakers(object):
+class SocialTwitter(object):
 
     def scraper(self):
-        country_list = ['indonesia']
-
         category_list = ['brands/accommodation', 'brands/airlines', 'brands/alcohol/beer',
                          'brands/alcohol/spirits', 'brands/alcohol/wine', 'brands/auto/cars',
                          'brands/beauty', 'brands/beverages/coffee-tea',
@@ -45,7 +43,7 @@ class SocialBakers(object):
                          'community/culture', 'community/film', 'community/fun', 'community/hobbies',
                          'community/life-style', 'community/music', 'community/personal',
                          'community/political', 'community/religion', 'community/sport-interest',
-                         'community/wikipedia', 'entertainment/apps', 'entertainment/books'
+                         'community/wikipedia', 'entertainment/apps', 'entertainment/books',
                          'entertainment/broadcast-show', 'entertainment/computer-game',
                          'entertainment/event', 'entertainment/fictional-character',
                          'entertainment/film-music-industry/cinemas', 'entertainment/film-music-industry/movies',
@@ -60,39 +58,34 @@ class SocialBakers(object):
                          'society/politics', 'society/professional-association', 'society/science',
                          'sport/sport-club', 'sport/sport-event', 'sport/sport-organization']
 
-        base_url = "https://www.socialbakers.com/statistics/facebook/pages/total/"
-
-        with codecs.open('/home/praveen/Working_files/social_bakers_indo_fb.csv', 'a', encoding='utf-8') as output_file:
+        with codecs.open("/home/praveen/Working_files/Social_bakers_collection/indo_yt_data.csv", "a", encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
-            for countries in country_list:
-                country = str(countries)
+            twitter_regex = r'\/statistics\/youtube\/channels\/detail\/[A-z0-9\-]+'
+            data_list = []
 
-                for cat in category_list:
-                    category = str(cat)
-                    url = "{}{}/{}/page-1-5/".format(base_url, country, category)
-                    data_list = []
-                    try:
-                        inp = requests.get(url)
-                        resp = inp.text
-                        detect_regex = r'\/statistics\/facebook\/pages\/detail\/[0-9]+[\-A-Za-z0-9]+'
-                        regex_compile = re.compile(detect_regex)
-                        regex_search = regex_compile.findall(resp)
+            for cat in category_list:
+                category = str(cat)
+                page_url = "https://www.socialbakers.com/statistics/youtube/channels/indonesia/{}/page-1-5/".format(category)
+                try:
+                    inp = requests.get(page_url)
+                    resp = inp.text
 
-                        for value in regex_search:
-                            print(country)
-                            data_list.append(country)
-                            print(value)
-                            data_list.append(value)
-                            print(category)
-                            data_list.append(category)
+                    regex_compile = re.compile(twitter_regex)
+                    regex_search = regex_compile.findall(resp)
 
-                            csv_writer.writerow(data_list)
-                            data_list = []
-                        sleep(randint(2, 4))
-                    except Exception as e:
-                        print(e)
+                    for row in regex_search:
+                        print('Indonesia')
+                        data_list.append('Indonesia')
+                        print(str(row))
+                        data_list.append(str(row))
+                        print(category)
+                        data_list.append(category)
+                        csv_writer.writerow(data_list)
+                        data_list = []
+                    sleep(randint(2, 4))
+                except Exception as e:
+                    print(e)
 
 
-obj = SocialBakers()
+obj = SocialTwitter()
 obj.scraper()
-

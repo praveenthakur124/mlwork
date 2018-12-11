@@ -58,14 +58,14 @@ class SocialTwitter(object):
                          'society/politics', 'society/professional-association', 'society/science',
                          'sport/sport-club', 'sport/sport-event', 'sport/sport-organization']
 
-        with codecs.open("/home/praveen/Working_files/Social_bakers_collection/twitter_data.csv", "a", encoding='utf-8') as output_file:
+        with codecs.open("/home/praveen/Working_files/Social_bakers_collection/indo_twitter_data.csv", "a", encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
             twitter_regex = r'\/statistics\/twitter\/profiles\/detail\/[A-z0-9\-]+'
             data_list = []
 
             for cat in category_list:
                 category = str(cat)
-                page_url = "https://www.socialbakers.com/statistics/twitter/profiles/india/{}/page-96-100/".format(category)
+                page_url = "https://www.socialbakers.com/statistics/twitter/profiles/indonesia/{}/page-1-5/".format(category)
                 try:
                     inp = requests.get(page_url)
                     resp = inp.text
@@ -74,8 +74,8 @@ class SocialTwitter(object):
                     regex_search = regex_compile.findall(resp)
 
                     for row in regex_search:
-                        print('India')
-                        data_list.append('India')
+                        print('Indonesia')
+                        data_list.append('Indonesia')
                         print(str(row))
                         data_list.append(str(row))
                         print(category)
