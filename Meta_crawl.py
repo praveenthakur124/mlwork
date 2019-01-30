@@ -12,11 +12,11 @@ class MetaData(object):
         self.api_key = api_key
 
     def crawling(self):
-        with codecs.open('/home/praveen/Working_files/test.csv', 'a', encoding='utf-8') as output_file:
+        with codecs.open('/home/praveen/Working_files/New_Zealand_test_data.csv', 'a', encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
             channel_id_file = pd.read_csv(self.input_file, header=None)
 
-            for channel in channel_id_file.values[:12]:
+            for channel in channel_id_file.values:
                 channel_id = str(channel[0])
 
                 base_video_url = 'https://www.youtube.com/watch?v='
@@ -80,11 +80,11 @@ class MetaData(object):
                                             meta_list.append(list(j['snippet']['tags']))  # append video tags in list
                                         else:
                                             meta_list.append("")
-                                        if 'publishedAt' in j['snippet']:
-                                            print(video_id, j['snippet']['publishedAt'])
-                                            meta_list.append(j['snippet']['publishedAt'])  # append video published date
-                                        else:
-                                            meta_list.append("")
+                                        # if 'publishedAt' in j['snippet']:
+                                        #     print(video_id, j['snippet']['publishedAt'])
+                                        #     meta_list.append(j['snippet']['publishedAt'])  # append video published date
+                                        # else:
+                                        #     meta_list.append("")
                             except Exception as e:
                                 print(e)
                             # Write video meta in csv file

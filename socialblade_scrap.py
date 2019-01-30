@@ -13,12 +13,13 @@ class Blade(object):
         self.input_file = input_file
 
     def scraper(self):
-        df = pd.read_excel(self.input_file)
+        df = pd.read_csv(self.input_file)
         base_url = "https://socialblade.com/youtube/channel/"
 
-        with codecs.open("/home/praveen/Working_files/Sharechat_work/ShareChat_Channels_Estimated_Earnings_output.csv", 'a', encoding='utf-8') as output_file:
+        with codecs.open("/home/praveen/Working_files/Sharechat_work/ShareChat_3rd_Cut_output.csv", 'a', encoding='utf-8') as output_file:
             csv_writer = csv.writer(output_file)
-            csv_writer.writerow(["Channel ID", "Min Earning", "Max Earning"])
+            csv_writer.writerow(["Channel ID", "Min. Estimated Monthly Earnings",
+                                 "Max. Estimated Monthly Earnings"])
             data_list = []
             count = 1
             for values in df['Channel ID'].values:
@@ -79,5 +80,5 @@ class Blade(object):
                 count += 1
 
 
-obj = Blade("/home/praveen/Working_files/Sharechat_work/ShareChat_Channels_Estimated_Earnings.xls")
+obj = Blade("/home/praveen/Working_files/Sharechat_work/ShareChat_3rd_Cut.csv")
 obj.scraper()
