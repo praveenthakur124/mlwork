@@ -3,9 +3,10 @@ import re
 import pandas as pd
 from time import sleep
 from random import randint
+import bs4
 
 
-class SocialTwitter(object):
+class SocialYoutube(object):
     def separator(self, input_dataframe):
         input_file = input_dataframe
         country_list = list(input_file['Country'])
@@ -25,15 +26,74 @@ class SocialTwitter(object):
                 username_list.append(url_name.capitalize())
             except Exception as e:
                 username_list.append(None)
-        frame = pd.DataFrame({'Country': country_list, 'Category': category_list, 'YT URL': url_list,
-                              'Channel ID': channel_id_list, 'UserName': username_list}, columns=['Country',
-                                                                                                  'Category', 'YT URL',
-                                                                                                  'Channel ID',
-                                                                                                  'UserName'])
+        frame = pd.DataFrame({'Country': country_list, 'Category': category_list, 'YouTube Channel URL': url_list,
+                              'YouTube Channel ID': channel_id_list, 'YouTube Channel Name': username_list}, columns=['Country',
+                                                                                                                      'Category',
+                                                                                                                      'YouTube Channel URL',
+                                                                                                                      'YouTube Channel ID',
+                                                                                                                      'YouTube Channel Name'])
         output_dataframe = frame
         return output_dataframe
 
+    def verification(self, input_dataframe):
+        base_url = 'https://www.socialbakers.com'
+        input_file = input_dataframe
+        country_list = list(input_file['Country'])
+        category_list = list(input_file['Category'])
+        url_list = list(input_file['YouTube Channel URL'])
+        yt_id_list = list(input_file['YouTube Channel ID'])
+        username_list = list(input_file['YouTube Channel Name'])
+        verified_list = list()
+        tags_list = list()
+        swap_list = list()
+
+        for url in url_list:
+            verified_regex = r'Verified Page'
+            line_regex = r'\r\n|\r|\n|\t|'
+            url = str(url)
+            url = base_url.strip()+url.strip()
+            try:
+                inp = requests.get(url)
+                resp = inp.text
+                soup = bs4.BeautifulSoup(resp, 'lxml')
+                verified_regex_compile = re.compile(verified_regex)
+                try:
+                    verified_finder = verified_regex_compile.findall(resp)[0]
+                    print(verified_finder)
+                    verified_list.append(verified_finder)
+                except Exception as e:
+                    print(e)
+                    verified_list.append(None)
+                try:
+                    tags = soup.find('div', {'class': 'account-tag-list'}).getText()
+                    tags = str(tags)
+                    tags = re.sub(line_regex, "", tags)
+                    tags = str(tags)
+                    tags = tags.split()
+                    tags = tags[:-2]
+                    print(tags)
+                    swap_list.append(tags)
+                except Exception as e:
+                    print(e)
+                    swap_list.append("")
+            except Exception as e:
+                print(e)
+            sleep(randint(3, 5))
+        for i in swap_list:
+            val = ", ".join(i)
+            tags_list.append(val)
+
+        frame = pd.DataFrame({'Country': country_list, 'Category': category_list, 'YouTube Channel URL': url_list,
+                              'YouTube Channel ID': yt_id_list, 'YouTube Channel Name': username_list,
+                              'Verification Status': verified_list, 'Tags (Comma separated)': tags_list},
+                             columns=['Country', 'Category', 'YouTube Channel URL', 'YouTube Channel ID',
+                                      'YouTube Channel Name', 'Verification Status', 'Tags (Comma separated)'])
+        output_file = frame
+        return output_file
+
     def scraper(self):
+        country_list = ['united-kingdom']
+
         pagination_list = ['', 'page-1-2', 'page-1-3', 'page-1-4', 'page-1-5', 'page-2-6',
                            'page-3-7', 'page-4-8', 'page-5-9', 'page-6-10', 'page-7-11', 'page-8-12',
                            'page-9-13', 'page-10-14', 'page-11-15', 'page-12-16', 'page-13-17',
@@ -109,38 +169,41 @@ class SocialTwitter(object):
         country_name_list = list()
         cat_name_list = list()
 
-        for cat in category_list:
-            category = str(cat)
+        for country in country_list:
+            country_name = str(country)
+            for cat in category_list[:59]:
+                category = str(cat)
 
-            for pagination in pagination_list[:5]:
-                page_no = str(pagination)
-                page_url = "https://www.socialbakers.com/statistics/youtube/channels/indonesia/{}/{}/".format(category, page_no)
-                try:
-                    inp = requests.get(page_url)
-                    resp = inp.text
+                for pagination in pagination_list[:50]:
+                    page_no = str(pagination)
+                    page_url = "https://www.socialbakers.com/statistics/youtube/channels/{}/{}/{}/".format(country_name ,category, page_no)
+                    try:
+                        inp = requests.get(page_url)
+                        resp = inp.text
 
-                    regex_compile = re.compile(yt_regex)
-                    regex_search = regex_compile.findall(resp)
+                        regex_compile = re.compile(yt_regex)
+                        regex_search = regex_compile.findall(resp)
 
-                    for row in regex_search:
-                        print('Indonesia')
-                        country_name_list.append('Indonesia')
-                        print(cat)
-                        cat_name_list.append(cat)
-                        print(str(row))
-                        channel_id_list.append(str(row))
-                        print(category)
-                except Exception as e:
-                    print(e)
-                    sleep(randint(1, 2))
+                        for row in regex_search:
+                            print(country_name)
+                            country_name_list.append(country_name)
+                            print(cat)
+                            cat_name_list.append(cat)
+                            print(str(row))
+                            channel_id_list.append(str(row))
+                            print(category)
+                    except Exception as e:
+                        print(e)
+                    sleep(randint(3, 5))
 
         df = pd.DataFrame({'Country': country_name_list, 'YT URL': channel_id_list,
                            'Category': cat_name_list}, columns=['Country', 'YT URL',
                                                                 'Category'])
         df1 = df.drop_duplicates(subset='YT URL')
         df1 = self.separator(df1)
-        df1.to_csv("/home/praveen/Working_files/test_output.csv")
+        df1 = self.verification(df1)
+        df1.to_csv("/home/praveen/Working_files/Social_bakers_collection/United_Kingdom/United_Kingdom_top_youtube_brand.csv")
 
 
-obj = SocialTwitter()
+obj = SocialYoutube()
 obj.scraper()

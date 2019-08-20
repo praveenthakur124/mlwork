@@ -6,36 +6,32 @@ from random import randint
 import bs4
 
 
-class SocialTwitter(object):
+class SocialFacebook(object):
     def separator(self, input_dataframe):
         input_file = input_dataframe
         country_list = list(input_file['Country'])
-        url_list = list(input_file['Twitter URL'])
+        url_list = list(input_file['FB URL'])
         category_list = list(input_file['Category'])
-        profile_id_list = list()
+        page_id_list = list()
         username_list = list()
-        user_handle_list = list()
         for url in url_list:
             url = str(url)
             url = url.split("/")
             url = url[5]
             url = url.split("-")
             url_id = str("'"+url[0]+"'")
-            profile_id_list.append(url_id)
+            page_id_list.append(url_id)
             try:
                 url_name = str(' '.join(url[1:]))
                 url_name = url_name.strip()
-                user_handle_list.append(url_name)
                 username_list.append(url_name.capitalize())
             except Exception as e:
-                user_handle_list.append(None)
                 username_list.append(None)
 
-        frame = pd.DataFrame({'Country': country_list, 'Category': category_list,
-                              'Twitter Profile URL': url_list, 'Twitter ID': profile_id_list,
-                              'Twitter Handle': user_handle_list, 'Twitter Name': username_list},
-                             columns=['Country', 'Category', 'Twitter Profile URL', 'Twitter ID',
-                                      'Twitter Handle', 'Twitter Name'])
+        frame = pd.DataFrame({'Country': country_list, 'Category': category_list, 'Facebook Page URL': url_list,
+                              'Facebook Page ID': page_id_list, 'Facebook Page Name': username_list},
+                             columns=['Country', 'Category', 'Facebook Page URL', 'Facebook Page ID',
+                                      'Facebook Page Name'])
 
         output_dataframe = frame
         return output_dataframe
@@ -45,16 +41,15 @@ class SocialTwitter(object):
         input_file = input_dataframe
         country_list = list(input_file['Country'])
         category_list = list(input_file['Category'])
-        url_list = list(input_file['Twitter Profile URL'])
-        twitter_id_list = list(input_file['Twitter ID'])
-        username_list = list(input_file['Twitter Name'])
-        user_handle = list(input_file['Twitter Handle'])
+        url_list = list(input_file['Facebook Page URL'])
+        page_id_list = list(input_file['Facebook Page ID'])
+        username_list = list(input_file['Facebook Page Name'])
         verified_list = list()
         tags_list = list()
         swap_list = list()
 
         for url in url_list:
-            verified_regex = r'Verified Profile'
+            verified_regex = r'Verified Page'
             line_regex = r'\r\n|\r|\n|\t|'
             url = str(url)
             url = base_url.strip()+url.strip()
@@ -65,7 +60,7 @@ class SocialTwitter(object):
                 verified_regex_compile = re.compile(verified_regex)
                 try:
                     verified_finder = verified_regex_compile.findall(resp)[0]
-                    print(verified_finder)
+                    # print(verified_finder)
                     verified_list.append(verified_finder)
                 except Exception as e:
                     verified_list.append(None)
@@ -88,11 +83,11 @@ class SocialTwitter(object):
             val = ", ".join(i)
             tags_list.append(val)
 
-        frame = pd.DataFrame({'Country': country_list, 'Category': category_list, 'Twitter Profile URL': url_list,
-                              'Twitter ID': twitter_id_list, 'Twitter Name': username_list, 'Twitter Handle': user_handle,
+        frame = pd.DataFrame({'Country': country_list, 'Category': category_list, 'Facebook Page URL': url_list,
+                              'Facebook Page ID': page_id_list, 'Facebook Page Name': username_list,
                               'Verification Status': verified_list, 'Tags (Comma separated)': tags_list},
-                             columns=['Country', 'Category', 'Twitter Profile URL', 'Twitter ID',
-                                      'Twitter Name', 'Twitter Handle', 'Verification Status', 'Tags (Comma separated)'])
+                             columns=['Country', 'Category', 'Facebook Page URL', 'Facebook Page ID',
+                                      'Facebook Page Name', 'Verification Status', 'Tags (Comma separated)'])
         output_file = frame
         return output_file
 
@@ -169,8 +164,8 @@ class SocialTwitter(object):
                          'society/politics', 'society/professional-association', 'society/science',
                          'sport/sport-club', 'sport/sport-event', 'sport/sport-organization']
 
-        twitter_regex = r'\/statistics\/twitter\/profiles\/detail\/[A-z0-9\-]+'
-        profile_id_list = list()
+        fb_regex = r'\/statistics\/facebook\/pages\/detail\/[0-9]+[\-A-Za-z0-9]+'
+        page_id_list = list()
         country_name_list = list()
         cat_name_list = list()
         for country in country_list:
@@ -180,12 +175,12 @@ class SocialTwitter(object):
 
                 for pagination in pagination_list[:50]:
                     page_no = str(pagination)
-                    page_url = "https://www.socialbakers.com/statistics/twitter/profiles/{}/{}/{}".format(country_name, category, page_no)
+                    page_url = "https://www.socialbakers.com/statistics/facebook/pages/total/{}/{}/{}".format(country_name, category, page_no)
                     try:
                         inp = requests.get(page_url)
                         resp = inp.text
 
-                        regex_compile = re.compile(twitter_regex)
+                        regex_compile = re.compile(fb_regex)
                         regex_search = regex_compile.findall(resp)
 
                         for row in regex_search:
@@ -194,20 +189,20 @@ class SocialTwitter(object):
                             print(cat)
                             cat_name_list.append(cat)
                             print(str(row))
-                            profile_id_list.append(str(row))
+                            page_id_list.append(str(row))
                             print(category)
                     except Exception as e:
                         print(e)
                     sleep(randint(2, 4))
 
-        df = pd.DataFrame({'Country': country_name_list, 'Twitter URL': profile_id_list,
-                           'Category': cat_name_list}, columns=['Country', 'Twitter URL',
+        df = pd.DataFrame({'Country': country_name_list, 'FB URL': page_id_list,
+                           'Category': cat_name_list}, columns=['Country', 'FB URL',
                                                                 'Category'])
-        df1 = df.drop_duplicates(subset='Twitter URL')
+        df1 = df.drop_duplicates(subset='FB URL')
         df1 = self.separator(df1)
         df1 = self.verification(df1)
-        df1.to_csv("/home/praveen/Working_files/Social_bakers_collection/United_Kingdom/United_Kindgom_top_twitter_brand.csv")
+        df1.to_csv("/home/praveen/Working_files/Social_bakers_collection/United_Kingdom/United_Kingdom_top_facebook_brand.csv")
 
 
-obj = SocialTwitter()
+obj = SocialFacebook()
 obj.scraper()

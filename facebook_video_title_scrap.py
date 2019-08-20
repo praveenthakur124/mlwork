@@ -40,7 +40,7 @@ class FacebookTitle(object):
                     print(e)
                 csv_writer.writerow(data_list)
                 data_list = []
-                # sleep(randint(1, 2))
+                sleep(randint(2, 4))
 
 
 obj = FacebookTitle("/home/praveen/Working_files/Facebook_work/facebook_title_scrap.csv")

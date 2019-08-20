@@ -51,7 +51,7 @@ class InstagramTitle(object):
 
                 csv_writer.writerow(data_list)
                 data_list = []
-                # sleep(randint(1, 2))
+                sleep(randint(2, 4))
 
 
 obj = InstagramTitle("/home/praveen/Working_files/Instagram_work/Instagram_url_file.csv")
